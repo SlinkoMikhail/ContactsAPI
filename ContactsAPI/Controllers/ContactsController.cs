@@ -50,11 +50,14 @@ namespace ContactsAPI.Controllers
         [HttpPut("{uuid}")]
         public async Task<IActionResult> UpdateContact(string uuid, Contact contact)
         {
-            if(!await contactsdb_.UpdateContact(uuid, contact))
+            if(await contactsdb_.UpdateContact(uuid, contact))
+            {
+                return NoContent();
+            }
+            else
             {
                 return BadRequest();
             }
-            return NoContent();
         }
     }
 }
