@@ -2,6 +2,7 @@ using ContactsAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace ContactsAPI
 {
@@ -22,6 +23,8 @@ namespace ContactsAPI
         public void Configure(IApplicationBuilder app)
         {
             app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseStaticFiles();
+            app.UseSerilogRequestLogging();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {

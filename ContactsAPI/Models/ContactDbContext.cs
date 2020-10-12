@@ -3,6 +3,7 @@ using Npgsql;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using Serilog;
 
 namespace ContactsAPI.Models
 {
