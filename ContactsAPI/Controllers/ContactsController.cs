@@ -20,19 +20,19 @@ namespace ContactsAPI.Controllers
             return Ok(await contactsdb_.GetAllContacts());
         }
 
-        [HttpGet("{uuid}")]
-        public async Task<IActionResult> GetContact(string uuid)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetContact(string id)
         {
-            Contact contact = await contactsdb_.GetContactById(Guid.Parse(uuid));
+            Contact contact = await contactsdb_.GetContactById(Guid.Parse(id));
             if(contact != null)
                 return Ok(contact);
             return NotFound();
         }
 
-        [HttpDelete("{uuid}")]
-        public async Task<IActionResult> DeleteContact(string uuid)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteContact(string id)
         {
-            await contactsdb_.DeleteContactById(Guid.Parse(uuid));
+            await contactsdb_.DeleteContactById(Guid.Parse(id));
             return NoContent();
         }
         [HttpPost]
@@ -40,7 +40,7 @@ namespace ContactsAPI.Controllers
         {
             if (await contactsdb_.CreateContact(contact))
             {
-                return Created("/contacts/" + contact.Uuid, contact);
+                return Created("/contacts/" + contact.Id, contact);
             }
             else
             {
