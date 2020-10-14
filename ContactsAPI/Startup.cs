@@ -19,7 +19,7 @@ namespace ContactsAPI
             services.AddSingleton<IConnectionFactory>(
                 new NpgsqlConnectionFactory(Configuration.GetConnectionString("ContactsDB"))
                 );
-            services.AddSingleton<ContactDbContext>();
+            services.AddSingleton<IContactRepository, ContactRepository>();
             services.AddCors();
         }
 

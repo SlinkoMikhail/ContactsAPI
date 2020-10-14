@@ -9,8 +9,8 @@ namespace ContactsAPI.Controllers
     [Route("/contacts")]
     public class ContactsController : ControllerBase
     {
-        private ContactDbContext contactsdb_;
-        public ContactsController(ContactDbContext contactsdb)
+        private IContactRepository contactsdb_;
+        public ContactsController(IContactRepository contactsdb)
         {
             contactsdb_ = contactsdb;
         }

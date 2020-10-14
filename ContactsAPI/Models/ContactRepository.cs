@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace ContactsAPI.Models
 {
-    public class ContactDbContext
+    public class ContactRepository : IContactRepository
     {
         private readonly IConnectionFactory connectionFactory_;
-        public ContactDbContext(IConnectionFactory connectionFactory)
+        public ContactRepository(IConnectionFactory connectionFactory)
         {
             connectionFactory_ = connectionFactory;
         }
