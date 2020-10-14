@@ -16,7 +16,10 @@ namespace ContactsAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTransient<ContactDbContext>();
+            services.AddSingleton<IConnectionFactory>(
+                new NpgsqlConnectionFactory(Configuration.GetConnectionString("ContactsDB"))
+                );
+            services.AddSingleton<ContactDbContext>();
             services.AddCors();
         }
 

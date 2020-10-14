@@ -1,24 +1,21 @@
-﻿using Microsoft.Extensions.Configuration;
-using Npgsql;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
-using Serilog;
 
 namespace ContactsAPI.Models
 {
     public class ContactDbContext
     {
-        NpgsqlConnection connection_;
-        public ContactDbContext(IConfiguration configuration)
+        private readonly IConnectionFactory connectionFactory_;
+        public ContactDbContext(IConnectionFactory connectionFactory)
         {
-            connection_ = new NpgsqlConnection(configuration.GetConnectionString("ContactsDB"));
+            connectionFactory_ = connectionFactory;
         }
         public async Task<Contact> GetContactById(Guid uuid)
         {
-            await connection_.OpenAsync();
             using NpgsqlCommand command = new NpgsqlCommand($"SELECT uuid, first_name, " +
-                $"last_name, number, creation_time FROM contacts WHERE uuid = '{uuid}'", connection_);
+                $"last_name, number, creation_time FROM contacts WHERE uuid = '{uuid}'", await connectionFactory_.CreateNpgsqlConnection());
             using NpgsqlDataReader reader = command.ExecuteReader();
             if (reader.Read())
             {
@@ -39,9 +36,8 @@ namespace ContactsAPI.Models
 
         public async Task<List<Contact>> GetAllContacts()
         {
-            await connection_.OpenAsync();
             using NpgsqlCommand command = new NpgsqlCommand(
-                $"SELECT uuid, first_name, last_name, number, creation_time FROM contacts", connection_);
+                $"SELECT uuid, first_name, last_name, number, creation_time FROM contacts", await connectionFactory_.CreateNpgsqlConnection());
             using NpgsqlDataReader reader = command.ExecuteReader();
             List<Contact> contacts = new List<Contact>();
             while (reader.Read())
@@ -60,14 +56,12 @@ namespace ContactsAPI.Models
 
         public async Task DeleteContactById(Guid uuid)
         {
-            await connection_.OpenAsync();
-            new NpgsqlCommand($"DELETE FROM contacts WHERE uuid = '{uuid}'", connection_)
+            new NpgsqlCommand($"DELETE FROM contacts WHERE uuid = '{uuid}'", await connectionFactory_.CreateNpgsqlConnection())
                 .ExecuteNonQuery();
         }
 
         public async Task<bool> CreateContact(Contact contact)
         {
-            await connection_.OpenAsync();
             try
             {
                 new NpgsqlCommand($"INSERT INTO contacts " +
@@ -76,7 +70,7 @@ namespace ContactsAPI.Models
                     $"'{contact.FirstName}', " +
                     $"'{contact.LastName}', " +
                     $"'{contact.Number}', " +
-                    $"'{contact.CreationTime}')", connection_)
+                    $"'{contact.CreationTime}')", await connectionFactory_.CreateNpgsqlConnection())
                     .ExecuteNonQuery();
                 return true;
             }
@@ -90,12 +84,11 @@ namespace ContactsAPI.Models
         {
             try
             {
-                await connection_.OpenAsync();
                 new NpgsqlCommand($"UPDATE contacts SET " +
                     $"first_name = '{contact.FirstName}', " +
                     $"last_name = '{contact.LastName}', " +
                     $"number = '{contact.Number}'" +
-                    $"WHERE uuid = '{uuid}'", connection_)
+                    $"WHERE uuid = '{uuid}'", await connectionFactory_.CreateNpgsqlConnection())
                     .ExecuteNonQuery();
                 return true;
             }
